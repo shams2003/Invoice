@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #00A859;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .invoice-container {
+      display: none;
+      width: 794px;
+      height: 1123px;
+      margin: 40px auto;
+      background: white;
+      padding: 40px;
+      font-size: 14px;
+      color: #000;
+      font-family: 'Poppins', sans-serif;
+      position: relative;
+    }
+    .green-bar {
+      background-color: #a3b33d;
+      color: white;
+      padding: 8px 12px;
+      display: inline-block;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 30px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+    }
+    .paid-banner {
+      font-size: 60px;
+      font-weight: 700;
+      color: #00A859;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="form-container">
+    <h2>Invoice Input</h2>
+    <label>Name: <input id="name" /></label>
+    <label>Student ID: <input id="studentId" /></label>
+    <label>Course Name: <input id="courseName" /></label>
+    <label>Batch Number: <input id="batchNumber" /></label>
+    <label>Class Start Date: <input type="date" id="startDate" /></label>
+    <label>Class Schedule: <input id="schedule" /></label>
+    <label>Total Course Fee: <input id="courseFee" /></label>
+    <label>Amount Paid: <input id="amountPaid" /></label>
+    <label>Payment Date: <input type="date" id="paymentDate" /></label>
+    <label>Payment Status: <input id="paymentStatus" /></label>
+    <label>Due Amount: <input id="dueAmount" /></label>
+    <label>Next Payment Date: <input type="date" id="nextPaymentDate" /></label>
+    <button onclick="generateInvoice()">Generate Invoice</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <div id="invoice" class="invoice-container"></div>
+
+  <script>
+    function generateInvoice() {
+      const name = document.getElementById('name').value;
+      const studentId = document.getElementById('studentId').value;
+      const courseName = document.getElementById('courseName').value;
+      const batchNumber = document.getElementById('batchNumber').value;
+      const startDate = document.getElementById('startDate').value;
+      const schedule = document.getElementById('schedule').value;
+      const courseFee = document.getElementById('courseFee').value;
+      const amountPaid = document.getElementById('amountPaid').value;
+      const paymentDate = document.getElementById('paymentDate').value;
+      const paymentStatus = document.getElementById('paymentStatus').value;
+      const dueAmount = document.getElementById('dueAmount').value;
+      const nextPaymentDate = document.getElementById('nextPaymentDate').value;
+
+      const invoiceDiv = document.getElementById('invoice');
+      const isPaid = paymentStatus.toLowerCase() === 'paid';
+
+      let statusSection = `<div class="green-bar"><strong>Payment Status:</strong> ${paymentStatus}</div>`;
+      if (!isPaid) {
+        statusSection += `
+          <div><div class="green-bar"><strong>Total Due:</strong> ${dueAmount}</div>
+          <div class="green-bar"><strong>Due Payment Date:</strong> ${nextPaymentDate}</div> 
+          </div>
+          
+        `;
+      }
+
+      const paidBanner = isPaid ? `<div class="paid-banner">PAID</div>` : '';
+
+      invoiceDiv.innerHTML = `
+        <h1 style="text-align:right; font-weight: 600;">INVOICE</h1>
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <p><strong>Student Name:</strong> ${name}</p>
+            <p><strong>Student ID:</strong> ${studentId}</p>
+            <p><strong>Course Name:</strong> ${courseName}</p>
+          </div>
+          <div>
+            <p><strong>Batch Number:</strong> ${batchNumber}</p>
+            <p><strong>Class Start Date (Tentative):</strong> ${startDate}</p>
+          </div>
+        </div>
+
+        <table style="width:100%; margin-top: 20px; border-collapse: collapse;">
+          <thead style="background: #a3b33d; color: white;">
+            <tr>
+              <th style="padding: 8px; text-align: left;">NO</th>
+              <th style="padding: 8px; text-align: left;">DESCRIPTION</th>
+              <th style="padding: 8px; text-align: left;">AMOUNT(BDT)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#f4f4f4">
+              <td style="padding: 8px;">1</td>
+              <td style="padding: 8px;">TOTAL COURSE FEE</td>
+              <td style="padding: 8px;">${courseFee}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">2</td>
+              <td style="padding: 8px;">PAID AMOUNT (${paymentDate})</td>
+              <td style="padding: 8px;">${amountPaid}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">${statusSection}</div>
+        ${paidBanner}
+
+        <p style="margin-top: 30px;"><strong>TERMS AND CONDITIONS</strong><br>
+        Please make the payment by the due date to the account below. We accept bank transfer, credit card, or check.</p>
+
+        <img 
+          src="https://scontent.fdac14-1.fna.fbcdn.net/v/t39.30808-6/461166434_122110353464423204_6272038119882786465_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=5osS6mstfHEQ7kNvwFx_E3Q&_nc_oc=AdnuNKJfltniSpLDSz9UlEMlTJ1U46wlf1Uc07LVi1CWm0mmcNnluW7ZId48P6n4S1w&_nc_zt=23&_nc_ht=scontent.fdac14-1.fna&_nc_gid=OIteIeu2q3Zhb_abqhfFLQ&oh=00_AfFHaynbGiPALP0w9hy7jyZTeneHrbFflU-9QALbJNdRNw&oe=680D924F" 
+          style="width: 40%; opacity: 0.5; display: block; margin: 20px auto;" 
+        />
+
+        <div class="footer">
+          <p>Visit our website <strong>www.skillspherebd.com</strong> | Call for information <strong>+8801334-330349</strong></p>
+        </div>
+      `;
+      invoiceDiv.style.display = 'block';
+    }
+
+    function downloadPDF() {
+      const invoice = document.getElementById('invoice');
+      html2canvas(invoice).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('invoice.pdf');
+      });
+    }
+  </script>
+</body>
+</html>
