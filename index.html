@@ -77,13 +77,13 @@
 <body>
   
   <div class="form-container">
-    <h2>Invoice Input</h2>
+    <h1>Skill Sphere</h1>
+    <h3>Invoice Input</h3>
     <label>Name: <input id="name" /></label>
     <label>Student ID: <input id="studentId" /></label>
     <label>Course Name: <input id="courseName" /></label>
     <label>Batch Number: <input id="batchNumber" /></label>
     <label>Class Start Date: <input type="date" id="startDate" /></label>
-    <label>Class Schedule: <input id="schedule" /></label>
     <label>Total Course Fee: <input id="courseFee" /></label>
     <label>Amount Paid: <input id="amountPaid" /></label>
     <label>Payment Date: <input type="date" id="paymentDate" /></label>
@@ -102,8 +102,7 @@
       const studentId = document.getElementById('studentId').value;
       const courseName = document.getElementById('courseName').value;
       const batchNumber = document.getElementById('batchNumber').value;
-      const startDate = document.getElementById('startDate').value;
-      const schedule = document.getElementById('schedule').value;
+      // const startDate = document.getElementById('startDate').value;
       const courseFee = document.getElementById('courseFee').value;
       const amountPaid = document.getElementById('amountPaid').value;
       const paymentDate = document.getElementById('paymentDate').value;
@@ -117,17 +116,18 @@
       let statusSection = `<div class="green-bar"><strong>Payment Status:</strong> ${paymentStatus}</div>`;
       if (!isPaid) {
         statusSection += `
-          <div><div class="green-bar"><strong>Total Due:</strong> ${dueAmount}</div>
-          <div class="green-bar"><strong>Due Payment Date:</strong> ${nextPaymentDate}</div> 
-          </div>
-          
+          <div><div class="green-bar"><strong>Total Due:</strong> ${dueAmount}</div></div>
+          <div class="green-bar"><strong>Due Payment Date:</strong> ${nextPaymentDate}</div>
         `;
       }
 
       const paidBanner = isPaid ? `<div class="paid-banner">PAID</div>` : '';
 
       invoiceDiv.innerHTML = `
-        <h1 style="text-align:right; font-weight: 600;">INVOICE</h1>
+        <div style="display: flex; justify-content: space-between;  width:50%; ">
+  <img src="./461166434_122110353464423204_6272038119882786465_n.jpg" alt="Logo" style="height: 60px;">
+  <h1 style="text-align: right; font-weight: 600;">INVOICE</h1>
+</div>
         <div style="display: flex; justify-content: space-between;">
           <div>
             <p><strong>Student Name:</strong> ${name}</p>
@@ -136,7 +136,8 @@
           </div>
           <div>
             <p><strong>Batch Number:</strong> ${batchNumber}</p>
-            <p><strong>Class Start Date (Tentative):</strong> ${startDate}</p>
+           
+            
           </div>
         </div>
 
@@ -165,11 +166,20 @@
         <div style="margin-top: 20px;">${statusSection}</div>
         ${paidBanner}
 
-        <p style="margin-top: 30px;"><strong>TERMS AND CONDITIONS</strong><br>
-        Please make the payment by the due date to the account below. We accept bank transfer, credit card, or check.</p>
+         <h4><strong>Terms and Conditions</strong></h4>
+      <ul>
+        <li>Payment must be completed within the due date mentioned on the invoice. Failure to do so may result in late fees or cancellation of enrollment.</li>
+        <li>Skills Sphere reserves the right to modify the training schedule or content if necessary.</li>
+        <li>All payments made are non-refundable unless otherwise stated in a written agreement.</li>
+       <li>
+  For any queries regarding this invoice or payment, please contact us at:<br>
+  <span style="color: blue;">Email: accounts@skillspherebd.org</span><br>
+  <span style="color: blue;">Phone: +880 9611-678930</span>
+</li>
+    </div>
 
         <img 
-          src="https://scontent.fdac14-1.fna.fbcdn.net/v/t39.30808-6/461166434_122110353464423204_6272038119882786465_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=5osS6mstfHEQ7kNvwFx_E3Q&_nc_oc=AdnuNKJfltniSpLDSz9UlEMlTJ1U46wlf1Uc07LVi1CWm0mmcNnluW7ZId48P6n4S1w&_nc_zt=23&_nc_ht=scontent.fdac14-1.fna&_nc_gid=OIteIeu2q3Zhb_abqhfFLQ&oh=00_AfFHaynbGiPALP0w9hy7jyZTeneHrbFflU-9QALbJNdRNw&oe=680D924F" 
+          src="./461166434_122110353464423204_6272038119882786465_n.jpg" 
           style="width: 40%; opacity: 0.5; display: block; margin: 20px auto;" 
         />
 
@@ -188,7 +198,6 @@
         const pdf = new jsPDF('p', 'pt', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save('invoice.pdf');
       });
